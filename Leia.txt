@@ -1,0 +1,22 @@
+
+
+
+https://github.com/kristerkari/react-native-svg-transformer
+
+npm i react-native-svg-transformer --save-dev
+
+biblioteca que permite usar SVG como componente
+
+
+Stack navigator
+
+npm install @react-navigation/native
+
+npx expo install react-native-screens react-native-safe-area-context
+
+npm install @react-navigation/native-stack
+
+
+mexer com tamanho de arquivo
+
+npx expo install expo-file-system
