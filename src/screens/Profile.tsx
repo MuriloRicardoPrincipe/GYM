@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { TouchableOpacity } from "react-native";
+import photoDefault from '@assets/userPhotoDefault.png'
 
 import { Center, Heading, ScrollView, Skeleton, Text, VStack, useToast } from "native-base";
 
@@ -54,8 +55,6 @@ export function Profile(){
 
     const [isUpdating, setIsUpdating] = useState(false)
 
-    const [ userPhoto, setUserPhoto] = useState('https://github.com/MuriloRicardoPrincipe.png')
-
     const [photoIsLoading, setPhotoIsLoading] = useState(false);
 
     const toast = useToast();
@@ -82,8 +81,36 @@ export function Profile(){
     
             if (PhotoSelected.canceled) return;
 
-            if (PhotoSelected.assets[0].uri) setUserPhoto(PhotoSelected.assets[0].uri);
-        
+            //if (PhotoSelected.assets[0].uri) 
+            //setUserPhoto(PhotoSelected.assets[0].uri);
+            const fileExtension = PhotoSelected.assets[0].uri.split('.').pop();
+
+            const photoFile = {
+              name: `${user.name}.${fileExtension}`.toLowerCase(),
+              uri: PhotoSelected.assets[0].uri,
+              type: `${PhotoSelected.assets[0].type}/${fileExtension}`
+            } as any;
+            const userPhotoUploadForm = new FormData();
+
+            userPhotoUploadForm.append('avatar', photoFile);
+    
+            const avatarUpdtedResponse = await api.patch('/users/avatar', userPhotoUploadForm, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+
+            const userUpdated = user;
+
+            userUpdated.avatar = avatarUpdtedResponse.data.avatar;
+    
+            await updateUserProfile(userUpdated);
+    
+            toast.show({
+              title: 'Foto atualizada!',
+              placement: 'top',
+              bgColor: 'green.500'
+            })
         } catch (error) {
             console.log(error)
         } finally{
@@ -134,7 +161,11 @@ export function Profile(){
                         :
                         <UserPhoto
                             size={PHOTO_SIZE}
-                            source={{uri: userPhoto}}
+                            source={
+                                user.avatar  
+                                ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` } 
+                                : photoDefault
+                              }
                             alt='Imagem do usuário'
                         />
                     }

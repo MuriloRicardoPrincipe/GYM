@@ -9,6 +9,7 @@ import { HistoryCard } from "@components/HistoryCard";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { useFocusEffect } from "@react-navigation/native";
 import { AppError } from "@utils/AppError";
+import { Loading } from "@components/Loading";
 
 export function History(){
 
@@ -40,7 +41,8 @@ export function History(){
     return(
         <VStack flex={1}>
             <ScreenHeader title='Histórico de Exercícios'/>
-            <SectionList
+            { isLoading? <Loading/> :
+                <SectionList
                 sections={exercises}
                 keyExtractor={ item => item.id}
                 renderItem={({item}) =>(
@@ -60,7 +62,7 @@ export function History(){
                         Vamos treinar!
                     </Text>
                 )}
-            />
+            />}
         </VStack>
     )
 }
